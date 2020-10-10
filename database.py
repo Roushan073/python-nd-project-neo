@@ -42,8 +42,49 @@ class NEODatabase:
         self._approaches = approaches
 
         # TODO: What additional auxiliary data structures will be useful?
+        # As per data one designation should be associated with only one NEO
+        self._neos_by_designation = {}
+
+        # There can be multiple NEOs associated with same name
+        self._neos_by_name = {}
 
         # TODO: Link together the NEOs and their close approaches.
+        '''
+        Iterating over all the CloseApproach -
+            1. Find position and neo in the `_neos` by designation
+            2. Updating neo approaches
+            3. Associating neo with CloseApproach
+        '''
+        for index, cad in enumerate(self._approaches):
+            pos, _neo = self.find_neo_pos_by_designation(cad._designation)
+            if pos != -1:
+                self._neos[pos].approaches.append(cad)
+                self._approaches[index].neo = _neo
+
+
+        '''
+        Iterating over all the NEOs and creating dictionary for storing -
+        1. neo desgination -> list of neos
+        2. neo name -> list of neos
+        '''
+        for _neo in self._neos:
+            # Creating a dictionary storing neo desgination and list of neos
+            if _neo.designation in self._neos_by_designation:
+                self._neos_by_designation[_neo.designation].append(_neo)
+            else:
+                self._neos_by_designation[_neo.designation] = [_neo]
+
+            # Creating a dictionary storing neo name and list of neos
+            if _neo.name in self._neos_by_name:
+                self._neos_by_name[_neo.name].append(_neo)
+            else:
+                self._neos_by_name[_neo.name] = [_neo]
+
+    def find_neo_pos_by_designation(self, key):
+        for i, obj in enumerate(self._neos):
+            if obj.designation == key:
+                return i, obj
+        return -1, None
 
     def get_neo_by_designation(self, designation):
         """Find and return an NEO by its primary designation.
@@ -59,7 +100,7 @@ class NEODatabase:
         :return: The `NearEarthObject` with the desired primary designation, or `None`.
         """
         # TODO: Fetch an NEO by its primary designation.
-        return None
+        return self._neos_by_designation[designation][0] if designation in self._neos_by_designation else None
 
     def get_neo_by_name(self, name):
         """Find and return an NEO by its name.
@@ -76,7 +117,7 @@ class NEODatabase:
         :return: The `NearEarthObject` with the desired name, or `None`.
         """
         # TODO: Fetch an NEO by its name.
-        return None
+        return self._neos_by_name[name][0] if name in self._neos_by_name else None
 
     def query(self, filters=()):
         """Query close approaches to generate those that match a collection of filters.
