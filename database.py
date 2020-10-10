@@ -12,6 +12,8 @@ data on NEOs and close approaches extracted by `extract.load_neos` and
 You'll edit this file in Tasks 2 and 3.
 """
 
+from functools import reduce
+
 class NEODatabase:
     """A database of near-Earth objects and their close approaches.
 
@@ -113,7 +115,7 @@ class NEODatabase:
         # TODO: Fetch an NEO by its name.
         return self.get_neo_by_designation(self._neos_by_name[name][0]) if name in self._neos_by_name else None
 
-    def query(self, filters=()):
+    def query(self, filters):
         """Query close approaches to generate those that match a collection of filters.
 
         This generates a stream of `CloseApproach` objects that match all of the
@@ -129,4 +131,8 @@ class NEODatabase:
         """
         # TODO: Generate `CloseApproach` objects that match all of the filters.
         for approach in self._approaches:
-            yield approach
+            is_valid = True
+            for f in filters:
+                is_valid = is_valid and f(approach)
+            if is_valid:
+                yield approach
