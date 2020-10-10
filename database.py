@@ -43,29 +43,15 @@ class NEODatabase:
 
         # TODO: What additional auxiliary data structures will be useful?
         # As per data one designation should be associated with only one NEO
-        self._neos_by_designation = {}
+        self._neos_by_designation = {} # str -> list[NearEarthObject]
 
         # There can be multiple NEOs associated with same name
-        self._neos_by_name = {}
-
-        # TODO: Link together the NEOs and their close approaches.
-        '''
-        Iterating over all the CloseApproach -
-            1. Find position and neo in the `_neos` by designation
-            2. Updating neo approaches
-            3. Associating neo with CloseApproach
-        '''
-        for index, cad in enumerate(self._approaches):
-            pos, _neo = self.find_neo_pos_by_designation(cad._designation)
-            if pos != -1:
-                self._neos[pos].approaches.append(cad)
-                self._approaches[index].neo = _neo
-
+        self._neos_by_name = {} # str -> list[str]
 
         '''
         Iterating over all the NEOs and creating dictionary for storing -
         1. neo desgination -> list of neos
-        2. neo name -> list of neos
+        2. neo name -> list of neo designation
         '''
         for _neo in self._neos:
             # Creating a dictionary storing neo desgination and list of neos
@@ -74,17 +60,32 @@ class NEODatabase:
             else:
                 self._neos_by_designation[_neo.designation] = [_neo]
 
-            # Creating a dictionary storing neo name and list of neos
+            # Creating a dictionary storing neo name and list of neo designation
             if _neo.name in self._neos_by_name:
-                self._neos_by_name[_neo.name].append(_neo)
+                self._neos_by_name[_neo.name].append(_neo.designation)
             else:
-                self._neos_by_name[_neo.name] = [_neo]
+                self._neos_by_name[_neo.name] = [_neo.designation]
 
-    def find_neo_pos_by_designation(self, key):
-        for i, obj in enumerate(self._neos):
-            if obj.designation == key:
-                return i, obj
-        return -1, None
+        # TODO: Link together the NEOs and their close approaches.
+        '''
+        Iterating over all the CloseApproach -
+            1. Find neo by designation in `_neos_by_designation`
+            2. Updating neos approaches in `_neos_by_designation`
+            3. Associating neo with CloseApproach
+        '''
+        for index, cad in enumerate(self._approaches):
+            if cad._designation in self._neos_by_designation:
+                neos_with_approach = []
+
+                for neo in self._neos_by_designation[cad._designation]:
+                    neo.approaches.append(cad)
+                    neos_with_approach.append(neo)
+
+                # Updating approach details in the NEO
+                self._neos_by_designation[cad._designation] = neos_with_approach
+
+                # Updating NEO info in the CloseApproach
+                self._approaches[index].neo = neos_with_approach[0]
 
     def get_neo_by_designation(self, designation):
         """Find and return an NEO by its primary designation.
@@ -117,7 +118,7 @@ class NEODatabase:
         :return: The `NearEarthObject` with the desired name, or `None`.
         """
         # TODO: Fetch an NEO by its name.
-        return self._neos_by_name[name][0] if name in self._neos_by_name else None
+        return self.get_neo_by_designation(self._neos_by_name[name][0]) if name in self._neos_by_name else None
 
     def query(self, filters=()):
         """Query close approaches to generate those that match a collection of filters.

@@ -79,9 +79,9 @@ class NearEarthObject:
         # The project instructions include one possibility. Peek at the __repr__
         # method for examples of advanced string formatting.
         if self.hazardous is True:
-            return (f"NEO {self.designation} ({self.name}) has a diameter of {self.diameter} km and is potentially hazardous")
+            return (f"NEO {self.designation} ({self.name}) has a diameter of {self.diameter:.3f} km and is potentially hazardous")
         else:
-            return (f"NEO {self.designation} ({self.name}) has a diameter of {self.diameter} km and is not potentially hazardous")
+            return (f"NEO {self.designation} ({self.name}) has a diameter of {self.diameter:.3f} km and is not potentially hazardous")
 
     def __repr__(self):
         """Return `repr(self)`, a computer-readable string representation of this object."""
@@ -152,9 +152,9 @@ class CloseApproach:
         # The project instructions include one possibility. Peek at the __repr__
         # method for examples of advanced string formatting.
         return (f"On {self.time_str}, '{self.neo.designation} ({self.neo.name})' approaches Earth at a "
-                f"distance of {self.distance} au and a velocity of {self.velocity} km/s")
+                f"distance of {self.distance:.2f} au and a velocity of {self.velocity:.2f} km/s")
 
     def __repr__(self):
         """Return `repr(self)`, a computer-readable string representation of this object."""
         return (f"CloseApproach(time={self.time_str!r}, distance={self.distance:.2f}, "
-                f"velocity={self.velocity:.2f}, neo={self._designation!r})")
+                f"velocity={self.velocity:.2f}, neo={self.neo!r})")
