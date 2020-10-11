@@ -61,17 +61,11 @@ class NearEarthObject:
         # Create an empty initial collection of linked approaches.
         self.approaches = []
 
-    def update_closest_approach(self, closest_approach, overwrite = False):
-        if overwrite:
-            self.approaches = closest_approach
-        else:
-            self.approaches.append(closest_approach)
-
     @property
     def fullname(self):
         """Return a representation of the full name of this NEO."""
         # TODO: Use self.designation and self.name to build a fullname for this object.
-        return ''
+        return f'{self.designation} ({self.name})'
 
     def __str__(self):
         """Return `str(self)`."""
@@ -88,6 +82,13 @@ class NearEarthObject:
         return (f"NearEarthObject(designation={self.designation!r}, name={self.name!r}, "
                 f"diameter={self.diameter:.3f}, hazardous={self.hazardous!r})")
 
+    def serialize(self):
+        return {
+            'designation': self.designation,
+            'name': '' if self.name is None else self.name,
+            'diameter_km': self.diameter,
+            'potentially_hazardous': self.hazardous
+        }
 
 class CloseApproach:
     """A close approach to Earth by an NEO.
@@ -158,3 +159,11 @@ class CloseApproach:
         """Return `repr(self)`, a computer-readable string representation of this object."""
         return (f"CloseApproach(time={self.time_str!r}, distance={self.distance:.2f}, "
                 f"velocity={self.velocity:.2f}, neo={self.neo!r})")
+
+    def serialize(self):
+        return {
+            'datetime_utc': self.time_str,
+            'distance_au': self.distance,
+            'velocity_km_s': self.velocity,
+            'neo': self.neo.serialize()
+        }
