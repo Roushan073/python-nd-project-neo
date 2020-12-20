@@ -12,7 +12,6 @@ data on NEOs and close approaches extracted by `extract.load_neos` and
 You'll edit this file in Tasks 2 and 3.
 """
 
-from functools import reduce
 
 class NEODatabase:
     """A database of near-Earth objects and their close approaches.
@@ -56,10 +55,10 @@ class NEODatabase:
         self._neos_by_name = {}
 
         for _neo in self._neos:
-            """ Updating dictionary storing neo desgination and neo """
+            # Updating dictionary storing neo desgination and neo
             self._neos_by_designation[_neo.designation] = _neo
 
-            """ Updating dictionary storing neo name and list of neo designation """
+            # Updating dictionary storing neo name and list of neo designation
             if _neo.name in self._neos_by_name:
                 self._neos_by_name[_neo.name].append(_neo.designation)
             else:
@@ -69,10 +68,10 @@ class NEODatabase:
             if cad._designation in self._neos_by_designation:
                 cur_neo = self._neos_by_designation[cad._designation]
 
-                """ Updating approach details in the NEO """
+                # Updating approach details in the NEO
                 self._neos_by_designation[cad._designation].approaches.append(cad)
 
-                """ Updating NEO reference in the CloseApproach """
+                # Updating NEO reference in the CloseApproach
                 self._approaches[index].neo = cur_neo
 
     def get_neo_by_designation(self, designation):

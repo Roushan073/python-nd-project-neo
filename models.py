@@ -100,8 +100,8 @@ class CloseApproach:
 
         self._designation = None if not info['des'] else info['des']
         self.time = None if not info['cd'] else cd_to_datetime(info['cd'])
-        self.distance = 0.0 if not info['dist'] else float(info['dist'])
-        self.velocity = 0.0 if not info['v_rel'] else float(info['v_rel'])
+        self.distance = float('nan') if not info['dist'] else float(info['dist'])
+        self.velocity = float('nan') if not info['v_rel'] else float(info['v_rel'])
 
         # Create an attribute for the referenced NEO, originally None.
         self.neo = None
